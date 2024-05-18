@@ -16,7 +16,8 @@ main()
     printf("\n");
     printf("xv6 kernel is booting\n");
     printf("\n");
-    kinit();         // physical page allocator
+    // kinit();         // physical page allocator
+    buddy_init();    // physical page allocator using buddy_alloc
     kvminit();       // create kernel page table
     kvminithart();   // turn on paging
     procinit();      // process table

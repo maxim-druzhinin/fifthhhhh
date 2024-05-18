@@ -17,8 +17,6 @@
 // end -- start of kernel page allocation area
 // PHYSTOP -- end RAM used by the kernel
 
-#define QEMU_POWER 0x100000
-
 // qemu puts UART registers here in physical memory.
 #define UART0 0x10000000L
 #define UART0_IRQ 10
@@ -48,6 +46,9 @@
 // from physical address 0x80000000 to PHYSTOP.
 #define KERNBASE 0x80000000L
 #define PHYSTOP (KERNBASE + 128*1024*1024)
+
+// half stop to use in buddy_alloc
+#define HALF_PHYSTOP (KERNBASE + 64*1024*1024)
 
 // map the trampoline page to the highest address,
 // in both user and kernel space.

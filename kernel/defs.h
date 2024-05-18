@@ -64,6 +64,11 @@ void*           kalloc(void);
 void            kfree(void *);
 void            kinit(void);
 
+// buddy_alloc.c
+void*           buddy_alloc(uint64 pgcnt);
+void            buddy_free(void *);
+void            buddy_init(void);
+
 // log.c
 void            initlog(int, struct superblock*);
 void            log_write(struct buf*);

@@ -22,7 +22,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-void poweroff(void);
+int dummy(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -32,7 +32,6 @@ char* strchr(const char*, char c);
 int strcmp(const char*, const char*);
 void fprintf(int, const char*, ...);
 void printf(const char*, ...);
-char* fgets(int fd, char*, int max);
 char* gets(char*, int max);
 uint strlen(const char*);
 void* memset(void*, int, uint);

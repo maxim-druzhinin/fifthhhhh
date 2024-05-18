@@ -66,6 +66,26 @@ sys_dup(void)
 }
 
 uint64
+sys_dummy(void)
+{
+/*
+  struct file *f;
+  int n;
+  uint64 p;
+
+  argaddr(1, &p);
+  argint(2, &n);
+  if(argfd(0, 0, &f) < 0)
+    return -1;
+  return fileread(f, p, n);
+*/
+
+    return 0x5555;
+}
+
+
+
+uint64
 sys_read(void)
 {
   struct file *f;
