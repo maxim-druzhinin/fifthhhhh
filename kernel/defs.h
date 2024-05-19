@@ -8,6 +8,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct BlocksInfo;
 
 // bio.c
 void            binit(void);
@@ -64,10 +65,12 @@ void*           kalloc(void);
 void            kfree(void *);
 void            kinit(void);
 
-// buddy_alloc.c
-void*           buddy_alloc(uint64 pgcnt);
-void            buddy_free(void *);
+// boddy_alloc.c
+void*           buddy_alloc(uint32 cnt);
+void            buddy_free(void*);
 void            buddy_init(void);
+void            mem_dump(void);
+
 
 // log.c
 void            initlog(int, struct superblock*);
@@ -87,6 +90,15 @@ void            panic(char*) __attribute__((noreturn));
 void            printfinit(void);
 
 // proc.c
+int 			ps_list(int limit, uint64 pids);
+int 			ps_info(int pid, uint64 pinfoAddr);
+int 			ps_pt0(int pid, uint64 table);
+int 			ps_pt1(int pid, uint64 addr, uint64 table);
+int 			ps_pt2(int pid, uint64 addr, uint64 table);
+int 			ps_copy(int pid, uint64 addr, int size, uint64 copyAddr);
+int 			ps_sleep_info(int pid, uint64 infoAddr);
+int 			clone(void);
+
 int             cpuid(void);
 void            exit(int);
 int             fork(void);

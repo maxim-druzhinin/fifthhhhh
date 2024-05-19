@@ -21,4 +21,13 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_dummy  22
-
+#define SYS_ps_list 23
+#define SYS_ps_info 24
+#define SYS_ps_pt0 25
+#define SYS_ps_pt1 26
+#define SYS_ps_pt2 27
+#define SYS_ps_copy 28
+#define SYS_ps_sleep_info 29
+#define SYS_clone 30
+#define SYS_getppid 31
+#define SYS_mem_dump 32

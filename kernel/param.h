@@ -1,4 +1,5 @@
 #define NPROC        64  // maximum number of processes
+#define NNMND        64  // maximum number of namespaces nodes 
 #define NCPU          8  // maximum number of CPUs
 #define NOFILE       16  // open files per process
 #define NFILE       100  // open files per system

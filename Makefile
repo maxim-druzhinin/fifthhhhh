@@ -8,7 +8,7 @@ OBJS = \
   $K/printf.o \
   $K/uart.o \
   $K/kalloc.o \
-  $K/buddy_alloc.o\
+  $K/buddy_alloc.o \
   $K/spinlock.o \
   $K/string.o \
   $K/main.o \
@@ -133,6 +133,8 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_ps\
+	$U/_new_command\
+	$U/_timekiller\
 	$U/_zombie\
 
 fs.img: mkfs/mkfs README $(UPROGS)

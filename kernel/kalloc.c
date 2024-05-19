@@ -9,11 +9,11 @@
 #include "riscv.h"
 #include "defs.h"
 
-/*
 void freerange(void *pa_start, void *pa_end);
 
 extern char end[]; // first address after kernel.
                    // defined by kernel.ld.
+extern uint64 mem_separator;
 
 struct run {
   struct run *next;
@@ -27,19 +27,29 @@ struct {
 void
 kinit()
 {
-  initlock(&kmem.lock, "kmem");
-  freerange(end, (void*)HALF_PHYSTOP);
+  mem_separator = 
+    PGROUNDUP((uint64)end); 
+    // PGROUNDUP(((uint64)end + PHYSTOP) / 2);
+  // printf("Kinit - %p\n", mem_separator);  
+  // initlock(&kmem.lock, "kmem");
+
+  // freerange((void*)end, (void*)mem_separator);
 }
 
+uint16 debug = 0;
 void
 freerange(void *pa_start, void *pa_end)
 {
   char *p;
   p = (char*)PGROUNDUP((uint64)pa_start);
+  
+  debug = 0;
   for(; p + PGSIZE <= (char*)pa_end; p += PGSIZE)
     kfree(p);
+  debug = 1;
+
 }
-*/
+
 
 // Free the page of physical memory pointed at by pa,
 // which normally should have been returned by a
@@ -48,24 +58,25 @@ freerange(void *pa_start, void *pa_end)
 void
 kfree(void *pa)
 {
+  // // if (debug)
+  // //   printf("kfree, %p\n", pa);
+  // struct run *r;
+
+  // if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
+  //   panic("kfree");
+
+  // // Fill with junk to catch dangling refs.
+  // memset(pa, 1, PGSIZE);
+
+  // r = (struct run*)pa;
+
+  // acquire(&kmem.lock);
+  // r->next = kmem.freelist;
+  // kmem.freelist = r;
+  // release(&kmem.lock);
+
+
   buddy_free(pa);
-  
-  /*
-  struct run *r;
-
-  if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
-    panic("kfree");
-
-  // Fill with junk to catch dangling refs.
-  memset(pa, 1, PGSIZE);
-
-  r = (struct run*)pa;
-
-  acquire(&kmem.lock);
-  r->next = kmem.freelist;
-  kmem.freelist = r;
-  release(&kmem.lock);
-  */
 }
 
 // Allocate one 4096-byte page of physical memory.
@@ -74,19 +85,18 @@ kfree(void *pa)
 void *
 kalloc(void)
 {
+  // struct run *r;
+
+  // acquire(&kmem.lock);
+  // r = kmem.freelist;
+  // if(r)
+  //   kmem.freelist = r->next;
+  // // printf("kalloc - %p\n", r);
+  // release(&kmem.lock);
+
+  // if(r)
+  //   memset((char*)r, 5, PGSIZE); // fill with junk
+  // return (void*)r;
+
   return buddy_alloc(1);
-  
-  /*
-  struct run *r;
-
-  acquire(&kmem.lock);
-  r = kmem.freelist;
-  if(r)
-    kmem.freelist = r->next;
-  release(&kmem.lock);
-
-  if(r)
-    memset((char*)r, 5, PGSIZE); // fill with junk
-  return (void*)r;
-  */
 }

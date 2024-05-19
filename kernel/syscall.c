@@ -6,6 +6,7 @@
 #include "proc.h"
 #include "syscall.h"
 #include "defs.h"
+#include "defMyStructs.h"
 
 // Fetch the uint64 at addr from the current process.
 int
@@ -91,6 +92,8 @@ extern uint64 sys_fstat(void);
 extern uint64 sys_chdir(void);
 extern uint64 sys_dup(void);
 extern uint64 sys_getpid(void);
+extern uint64 sys_getppid(void);
+extern uint64 sys_mem_dump(void);
 extern uint64 sys_sbrk(void);
 extern uint64 sys_sleep(void);
 extern uint64 sys_uptime(void);
@@ -102,7 +105,14 @@ extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_dummy(void);
-
+extern uint64 sys_ps_list(void);
+extern uint64 sys_ps_info(void);
+extern uint64 sys_ps_pt0(void);
+extern uint64 sys_ps_pt1(void);
+extern uint64 sys_ps_pt2(void);
+extern uint64 sys_ps_copy(void);
+extern uint64 sys_ps_sleep_info(void);
+extern uint64 sys_clone(void);
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
 static uint64 (*syscalls[])(void) = {
@@ -117,6 +127,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_chdir]   sys_chdir,
 [SYS_dup]     sys_dup,
 [SYS_getpid]  sys_getpid,
+[SYS_getppid] sys_getppid,
+[SYS_mem_dump] sys_mem_dump,
 [SYS_sbrk]    sys_sbrk,
 [SYS_sleep]   sys_sleep,
 [SYS_uptime]  sys_uptime,
@@ -128,7 +140,16 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_dummy]   sys_dummy,
+[SYS_ps_list] sys_ps_list,
+[SYS_ps_info] sys_ps_info,
+[SYS_ps_pt0]  sys_ps_pt0,
+[SYS_ps_pt1]  sys_ps_pt1,
+[SYS_ps_pt2]  sys_ps_pt2,
+[SYS_ps_copy] sys_ps_copy,
+[SYS_ps_sleep_info] sys_ps_sleep_info,
+[SYS_clone] sys_clone,
 };
+
 
 void
 syscall(void)
@@ -141,9 +162,11 @@ syscall(void)
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
     p->trapframe->a0 = syscalls[num]();
-  } else {
-    printf("%d %s: unknown sys call %d\n",
+  } else {    
+    printf("%d %s: unknown sys call %d\n", 
             p->pid, p->name, num);
     p->trapframe->a0 = -1;
   }
+
+
 }

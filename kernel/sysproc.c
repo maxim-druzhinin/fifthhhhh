@@ -18,13 +18,31 @@ sys_exit(void)
 uint64
 sys_getpid(void)
 {
-  return myproc()->pid;
+  struct proc* p = myproc();
+  return p->namespace_pids[p->node->depth];
+}
+
+
+uint64
+sys_getppid(void)
+{
+  if (myproc()->pid == 1) return 0;
+  struct proc* p = myproc()->parent;
+
+  return p->namespace_pids[p->node->depth];
+  
 }
 
 uint64
 sys_fork(void)
 {
   return fork();
+}
+
+uint64
+sys_clone(void)
+{
+	return clone();
 }
 
 uint64

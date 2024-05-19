@@ -15,6 +15,8 @@
 #include "sleeplock.h"
 #include "file.h"
 #include "fcntl.h"
+#include "defMyStructs.h"
+#include "budMemInfo.h"
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
@@ -79,10 +81,95 @@ sys_dummy(void)
     return -1;
   return fileread(f, p, n);
 */
-
+   
     return 0x5555;
 }
 
+void
+sys_mem_dump(void) {  
+  mem_dump();
+}
+
+int
+sys_ps_list(void) {
+    int limit;
+    uint64 pids;
+    argint(0, &limit);
+    argaddr(1, &pids);
+    return ps_list(limit, pids);
+}
+
+uint64
+sys_ps_info(void) {
+   int pid;
+   uint64 pinfoAddr;
+
+   argint(0, &pid);
+   argaddr(1, &pinfoAddr);
+   return ps_info(pid, pinfoAddr);
+}
+
+uint64
+sys_ps_pt0(void) {
+	int pid;
+	uint64 tableAddr;
+
+	argint(0, &pid);
+	argaddr(1, &tableAddr);
+
+	return ps_pt0(pid, tableAddr);
+}
+
+uint64
+sys_ps_pt1(void) {
+	int pid;
+	uint64 tableAddr;
+	uint64 addr;
+
+	argint(0, &pid);
+	argaddr(1, &addr);
+	argaddr(2, &tableAddr);
+
+	return ps_pt1(pid, addr, tableAddr);
+}
+
+uint64
+sys_ps_pt2(void) {
+	int pid;
+	uint64 addr;
+	uint64 tableAddr;
+
+	argint(0, &pid);
+	argaddr(1, &addr);
+	argaddr(2, &tableAddr);
+
+	return ps_pt2(pid, addr, tableAddr);
+}
+
+
+uint64
+sys_ps_copy(void) {
+	int pid;
+	uint64 addr,copyAddr;
+	int size;
+
+	argint(0, &pid);
+	argaddr(1, &addr);
+	argint(2, &size);
+	argaddr(3, &copyAddr);
+
+	return ps_copy(pid, addr, size, copyAddr);
+}
+
+int
+sys_ps_sleep_info(void) {
+	int pid;
+	uint64 infoAddr;
+	argint(0, &pid);
+	argaddr(1, &infoAddr);
+	
+	return ps_sleep_info(pid, infoAddr);
+}
 
 
 uint64
@@ -454,6 +541,8 @@ sys_chdir(void)
 uint64
 sys_exec(void)
 {
+  // exit(-1);
+
   char path[MAXPATH], *argv[MAXARG];
   int i;
   uint64 uargv, uarg;
@@ -474,7 +563,9 @@ sys_exec(void)
       argv[i] = 0;
       break;
     }
+
     argv[i] = kalloc();
+
     if(argv[i] == 0)
       goto bad;
     if(fetchstr(uarg, argv[i], PGSIZE) < 0)

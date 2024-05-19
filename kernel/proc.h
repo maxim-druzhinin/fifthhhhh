@@ -1,4 +1,7 @@
 // Saved registers for kernel context switches.
+#include "kernel/defMyStructs.h"
+
+
 struct context {
   uint64 ra;
   uint64 sp;
@@ -79,7 +82,8 @@ struct trapframe {
   /* 280 */ uint64 t6;
 };
 
-enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
+// enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
+
 
 // Per-process state
 struct proc {
@@ -91,6 +95,8 @@ struct proc {
   int killed;                  // If non-zero, have been killed
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
+  int namespace_pids[8];
+  struct namespace_node *node;
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
@@ -104,4 +110,8 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  struct proccess_info pinfo;   // My information about procces
 };
+
+

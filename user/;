@@ -1,0 +1,100 @@
+#include "kernel/types.h"
+#include "user/user.h"
+#include "kernel/riscv.h"
+
+static char *states[] = {
+[UNUSED]	"unused  ",	
+[USED]		"used    ",
+[SLEEPING]	"sleeping",
+[RUNNABLE]	"runnable",
+[RUNNING]	"running ",
+[ZOMBIE]	"zombie  ",
+};
+
+static char *flags[] = {
+[0] "VALID",
+[1]	"READABLE",
+[2] "WRITE",
+[3] "EXECUTABLE",
+[4] "USER",
+[5] "GLOBAL",
+[6] "ACCESSED",
+[7] "DIRTY",
+};
+
+void
+main(int argc, char *argv[]) {
+	int pids[32], limit = 32;
+	if (argc == 2 && 0 == strcmp("count", argv[1])) {
+		printf("%d\n", ps_list(limit, pids));	
+	}
+	if (argc >= 2 && 0 == strcmp("pids", argv[1])) {
+		limit = ps_list(limit, pids);
+		if (argc >= 3) {
+			limit = atoi(argv[2]);
+		}
+		for (int i = 0; i < limit; ++i) {
+			printf("Pid %d = %d\n", i, pids[i]);
+		}
+	}
+	if (argc >= 2 && 0 == strcmp("list", argv[1])) {
+		limit = ps_list(limit, pids);
+		if (argc >= 3) {
+			limit = atoi(argv[2]);
+		}
+		struct proccess_info pinfo;
+		printf("state\t\tpid\tUptime\tP_pid\tMem size\tcnt open file\t\tWork Time\tSwitch cnt\tName\n");
+		for (int i = 0; i < limit; ++i) {
+			if (! ps_info(pids[i], &pinfo)) {
+				printf("%s\t%d\t%d\t%d\t%d\t\t%d\t\t\t%d\t\t%d\t\t%s\n",
+					states[pinfo.state],
+					pinfo.pid,
+					uptime() - pinfo.startTime,		
+					pinfo.parent_pid,		
+					pinfo.sz,		
+					pinfo.cntOfile,		
+					pinfo.totalTime,
+					pinfo.cntChange,	
+					pinfo.name
+				);
+			}
+
+		}
+	}
+	if (argc >= 4 && strcmp(argv[1], "pt") == 0) {
+		int pid = atoi(argv[3]);
+		int need_valid = 1 - (argc > 4 && strcmp(argv[4], "-v") == 0);
+		uint64* table = (uint64*) malloc(512 * 8);
+		int status = 0;
+		if (strcmp(argv[2], "0") == 0) {
+			status = ps_pt0(pid,  table) == 0;
+		} else if (srtcmp(argv[2], "1") == 0) {
+			status = ps_pt0(pid, table) == 0;	
+		}
+		if (status != 0) {
+			printf("#\tPNN\t\tFlags\n");
+			for (int i = 0; i < 512; ++i) {
+				if ((table[i] & PTE_V) != 0) { // just for testing
+					printf("%d\t: ", i);
+					printf("%x\t", PTE2PA(table[i]));
+					//printf("MY FLAGS");
+					int last = 0;
+					for (int j = need_valid; j < 8; ++j) {
+						if (((1L << j) & table[i]) != 0) {
+							last = j;
+						}
+					}
+					for (int j = need_valid; j < 8; ++j) {
+						if (((1L << j) & table[i]) != 0) {
+							printf("%s", flags[j]);
+							if (j != last) printf(",");
+						}
+					}
+					printf("\n");
+				}
+			}
+		}
+		free(table);
+	}
+   	exit(0);
+}

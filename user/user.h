@@ -1,3 +1,6 @@
+#include "kernel/defMyStructs.h"
+#include "kernel/budMemInfo.h"
+
 struct stat;
 
 // system calls
@@ -23,6 +26,14 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int dummy(void);
+int ps_list(int limit, int* pids);
+int ps_info(int pid, struct proccess_info *pinfo);
+int ps_pt0(int pid, uint64* tableAddr);
+int ps_pt1(int pid, void* addr, uint64* tableAddr);
+int ps_pt2(int pid, void* addr, uint64* tableAddr);
+int ps_copy(int pid, void* addr, int size, void* data);
+int ps_sleep_info(int pid, struct write_info *info);
+int clone(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -40,3 +51,5 @@ void free(void*);
 int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
+void mem_dump(void);
+

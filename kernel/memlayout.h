@@ -47,9 +47,6 @@
 #define KERNBASE 0x80000000L
 #define PHYSTOP (KERNBASE + 128*1024*1024)
 
-// half stop to use in buddy_alloc
-#define HALF_PHYSTOP (KERNBASE + 64*1024*1024)
-
 // map the trampoline page to the highest address,
 // in both user and kernel space.
 #define TRAMPOLINE (MAXVA - PGSIZE)
